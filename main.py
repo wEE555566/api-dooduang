@@ -8,12 +8,12 @@ import random
 
 
 app = FastAPI()
-
+OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
   
 async def call_gamma(prompt, user_input, temperature):
     url = "https://openrouter.ai/api/v1/completions"
     headers = {
-        "Authorization": f"{api_key}",
+        "Authorization": f"Bearer {OPENROUTER_KEY}",
         "Content-Type": "application/json"
     }
     dprompt = f"""
