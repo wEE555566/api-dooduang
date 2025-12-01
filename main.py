@@ -36,7 +36,7 @@ class UserProfile(BaseModel):
 async def call_naja(prompt, user_input, temperature):
     url = "https://openrouter.ai/api/v1/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
     dprompt = f"""
@@ -57,7 +57,7 @@ async def call_naja(prompt, user_input, temperature):
 async def call_gamma(prompt, user_input, temperature):
     url = "https://openrouter.ai/api/v1/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
     dprompt = f"""
