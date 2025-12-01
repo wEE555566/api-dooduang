@@ -1,63 +1,19 @@
 from fastapi import FastAPI, Request
 import hashlib, hmac, base64, json
-import httpx
 from fastapi.responses import PlainTextResponse
 import requests
-import redis
-import os
-import time
-from datetime import datetime
-import threading
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import Optional
-from PIL import Image
-import math
 import random
 
 
 
 app = FastAPI()
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to restrict origins if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-class UserProfile(BaseModel):
-    userId: str
-    userName: str
-    picture: Optional[str] = None
-
-async def call_naja(prompt, user_input, temperature):
-    url = "https://openrouter.ai/api/v1/completions"
-    headers = {
-        "Authorization": "Bearer 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",
-        "Content-Type": "application/json"
-    }
-    dprompt = f"""
-    {prompt}
-    {user_input}
-    """
-    payload = {
-        "model": "google/gemma-3-27b-it:free",
-        "prompt": dprompt,
-        "temperature": temperature,
-        "max_tokens": 1000
-    }
-
-    response = requests.post(url, json=payload, headers=headers,timeout=60)
-    result = response.json()['choices'][0]['text'].strip()
-    return result
   
 async def call_gamma(prompt, user_input, temperature):
     url = "https://openrouter.ai/api/v1/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
     dprompt = f"""
@@ -74,7 +30,7 @@ async def call_gamma(prompt, user_input, temperature):
     response = requests.post(url, json=payload, headers=headers,timeout=60)
     result = response.json()['choices'][0]['text'].strip()
     return result
-  
+
   
 p1_1="""The Fool หมายถึง การเริ่มต้นอะไรใหม่ ๆ การเสี่ยงอันตราย หากว่าเปิดได้ไพ่ใบนี้แล้วล่ะก็ เส้นทางใหม่ที่เพื่อน ๆ จะเดินไปอาจมีความเสี่ยง แต่เป็นความเสี่ยงที่เพื่อน ๆ ต้องการ รู้ว่าเสี่ยงแต่คงต้องขอลอง"""
 p1_2="""ไพ่กลับหัวของ The Fool ความหมายจะตรงข้ามกับไพ่นี้ทั้งหมด โดยความหมายเดิมคือ หมายถึง การเริ่มต้นอะไรใหม่ ๆ การเสี่ยงอันตราย หากว่าเปิดได้ไพ่ใบนี้แล้วล่ะก็ เส้นทางใหม่ที่เพื่อน ๆ จะเดินไปอาจมีความเสี่ยง แต่เป็นความเสี่ยงที่เพื่อน ๆ ต้องการ รู้ว่าเสี่ยงแต่คงต้องขอลอง"""
@@ -353,8 +309,6 @@ async def gemma(question:str):
   exams = await call_gamma(user_input="จงตอบคําถามต่อไปนี้",prompt=prompts ,temperature=0.8)
   return PlainTextResponse(exams)
 
-
-
 @app.get("/doo3")
 async def doo3(content:str):
     card1=f"p{random.randint(1, 78)}_{random.randint(1, 2)}" 
@@ -379,35 +333,4 @@ async def doo3(content:str):
     """
     exams = await call_gamma(user_input="ดูดวงให้หน่อย ตอบแค่ฉันได้ไพ่อะไร แล้วสรุปแล้วดวงฉันเป็นอย่างไรบ้าง",prompt=prompts ,temperature=0.8)
     return PlainTextResponse(exams)
-
-
-
-
-
-@app.get("/3card")
-async def card(card: str,content:str):
-    parts = [c.strip() for c in card.split("|")]
-    parts += [None] * (3 - len(parts))
-    card1, card2, card3 = parts[:3]
-
-    info_card1 = CARD_MAP.get(card1, f"Unknown card: {card1}")
-    info_card2 = CARD_MAP.get(card2, f"Unknown card: {card2}")
-    info_card3 = CARD_MAP.get(card3, f"Unknown card: {card3}")
-    prompts = f"""
-    คุณคือผู้เชี่ยวชาญด้านการวิเคราะดวง โดยใช้ไพ่ยิปซี แบบ 3 ใบ อ่านแนวโน้มความสัมพันธ์ความรัก 
-    หรือถามคำถามง่าย ๆ เช่น จะได้งานไหม จะได้โชคลาภหรือเปล่า
-    ไพ่ Major Arcana ในการทำนายก็ได้เช่นกัน โดยไพ่สำรับนี้จะอ้างอิงตำนานต่าง ๆ และเน้นทำนายไปยังสถานการณ์ต่าง ๆ เป็นหลัก ไม่ได้เจาะจงเรื่องเงิน งาน ความรู้ หรือความเครียดเพียงเรื่องเดียว
-    ไพ่ถ้วย (Cups) คือตัวแทนของความรู้สึกของผู้เปิดไพ่หรือผู้ที่ถูกถามถึง มีทั้งความหมายด้านดีและด้านลบ แบ่งเป็นทั้งหมด 14 ใบ 
-    ไพ่เหรียญ (Pentacles) คือตัวแทนของเงินทองและความมั่งคั่ง ยิ่งเหรียญเยอะก็ยิ่งหมายถึงความร่ำรวย 
-    ไพ่ดาบ (Swords) คือตัวแทนของความเครียด การฟันฝ่าอุปสรรค หากอยากประสบความสำเร็จก็ยิ่งต้องฝ่าฟัน ยิ่งต้องใช้ดาบเยอะเท่านั้น 
-    ไพ่ไม้เท้า (Wands) คือตัวแทนของงาน ภาระหน้าที่ ความอดทน ยิ่งมีจำนวนไม้เท้ามากเท่าไรก็หมายถึงหน้าที่รับผิดชอบมากเท่านั้น รวมถึงต้องพยายามมากเท่านั้นด้วยเช่นกัน 
-    
-    โดยการตีความจะปรับตาม เรื่องของการดู 
-    ใบแรกหมายถึง อดีต ปัจจุบัน อนาคต ใบสองหมายถึง ความรู้สึกเรา ความรู้สึกอีกฝ่าย  แนวโน้มในอนาคตแนวโน้มในอนาคต  ใบสามหมายถึง เหตุ ผล สรุป 
-    รอบนี้คุณต้องดูเรื่อง "{content} และความหมายของไพ่ใบแรกคือ{info_card1} ความหมายของไพ่ใบสองคือ{info_card2} ความหมายของไพ่ใบสามคือ{info_card3}"
-    """
-    exams = await call_gamma(user_input="ดูดวงให้หน่อย ตอบแค่ฉันได้ไพ่อะไร แล้วสรุปแล้วดวงฉันเป็นอย่างไรบ้าง",prompt=prompts ,temperature=0.8)
-    return PlainTextResponse(exams)
-
-
 
