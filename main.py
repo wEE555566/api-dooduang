@@ -65,7 +65,7 @@ async def call_gamma(prompt, user_input, temperature):
     {user_input}
     """
     payload = {
-        "model": "google/gemma-3n-e4b-it:free",
+        "model": "google/gemma-3-4b-it:free",
         "prompt": dprompt,
         "temperature": temperature,
         "max_tokens": 1000
