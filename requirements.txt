@@ -1,3 +1,10 @@
+pip 
 fastapi
-uvicorn
-requests
+httpx
+streamlit
+requests 
+uvicorn[standard] 
+redis
+jwt
+pillow  
+
