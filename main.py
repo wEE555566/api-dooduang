@@ -13,7 +13,7 @@ app = FastAPI()
 async def call_gamma(prompt, user_input, temperature):
     url = "https://openrouter.ai/api/v1/completions"
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": f"{api_key}",
         "Content-Type": "application/json"
     }
     dprompt = f"""
